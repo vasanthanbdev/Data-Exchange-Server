@@ -1,31 +1,50 @@
-# compiler
-CXX = g++
+# #COMPILER
+# CXX = g++
 
-# compiler flags
-CXXFLAGS = -std=c++11 -Wall
+# #COMPILER FLAGS
+# CXXFLAGS = -std=c++11 -Wall -lzmq
 
-#source files
-SRCS = plf.cpp
+# #SOURCE FILES
+# SRCS = server.cpp client.cpp
 
-#Object files
-OBJS = $(SRCS:.cpp=.o)
+# #OBJECT FILES
+# OBJS = $(SRCS:.cpp=.o)
 
-#Executable file
-TARGET = plf
+# #EXECUTABLE FILES
+# TARGET = server client
+ 
 
-#default target
-all: $(TARGET)
+# #DEFAULT TARGET
+# all: $(TARGET)
+# .PHONY: all
 
-#Rule to build the executable file
-# $@ - TARGET, $^ - OBJS (dependencies)
-$(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $^  
 
-#Rule to build object files
-# $< - SRCS, $@ - OBJS 
-$(OBJS): $(SRCS)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+# #RULES
 
-#clean the generated files
+# #RULES TO BUILD EXECUTABLES
+# #$@- TARGET, $^- OBJS
+# $(TARGET): $(OBJS)
+# 	$(CXX) $(CXXFLAGS) -o $@ $^  -lzmq
+
+# #RULES TO BUILD OJECT FILES
+# #$<- SRCS, $@- OBJS
+# %.o: %.cpp
+# 	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# #RULES TO CLEAN
+# clean:
+# 	rm -rf $(OBJS) $(TARGET)
+
+
+all: server client
+
+server: server.cpp
+	g++ -o server server.cpp -lzmq
+
+client: client.cpp
+	g++ -o client client.cpp -lzmq
+
 clean:
-	rm -f $(OBJS) $(TARGET)
+	-rm server client
+
+
