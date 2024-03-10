@@ -3,6 +3,7 @@
 #include <cstring>
 #include <zmq.hpp>
 #include <cerrno>
+#include <thread>
 
 using namespace std;
 
@@ -53,13 +54,12 @@ string get_file_listing(string command){
 }
 
 
-
-
-int main() {
+// server thread
+void zmq_server() {
     //creating the context and socket
-    zmq::context_t context (2);
+    zmq::context_t context (1);
     zmq::socket_t socket (context, ZMQ_REP);
-    socket.bind("tcp://*:5555");
+    socket.bind("tcp://*:5554");
 
     while (true) {
         //receive the request
@@ -78,7 +78,44 @@ int main() {
 
         //sending the reqly message
         socket.send(reply, zmq::send_flags::none);
+
+        // sleep
+        sleep(1);
     }
+}
+
+
+// client thread
+void zmq_client() {
+    zmq::context_t context(2);
+    zmq::socket_t socket(context, ZMQ_REQ);
+    socket.connect("tcp://localhost:5555");
+
+    //get the input from the user
+    cout << "Enter a command and absolute path if required: ";
+    string input;
+    getline(cin, input);
+
+    //prepare the message
+    zmq::message_t request(input.size());
+    memccpy(request.data(), input.c_str(), '\0', input.size());
+    
+    // send the request
+    socket.send(request, zmq::send_flags::none);
+
+    // print the recieved output
+    zmq::message_t reply;
+    socket.recv(reply, zmq::recv_flags::none);
+    cout << reply.to_string() << endl;
+}
+
+
+int main() {
+    std::thread server_thread(zmq_server);
+    std::thread client_thread(zmq_client);
+
+    server_thread.join();
+    server_client.join();
 
     return 0;
 }

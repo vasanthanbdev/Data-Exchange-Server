@@ -36,15 +36,15 @@
 # 	rm -rf $(OBJS) $(TARGET)
 
 
-all: server client
+all: server plf
 
 server: server.cpp
-	g++ -o server server.cpp -lzmq
+	g++ -o server server.cpp -lzmq -lpthread
 
-client: client.cpp
-	g++ -o client client.cpp -lzmq
+plf: plf.cpp
+	g++ -o plf plf.cpp -lzmq -lpthread
 
 clean:
-	-rm server client
+	-rm server plf
 
 
